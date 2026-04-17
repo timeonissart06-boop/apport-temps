@@ -1,4 +1,49 @@
 // =====================
+// SPLASH SCREEN
+// Plein écran au chargement, disparaît au scroll ou après délai max
+// =====================
+(function () {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+
+  // Empêche le scroll pendant l'affichage du splash
+  document.body.style.overflow = 'hidden';
+
+  let dismissed = false;
+
+  function dismissSplash() {
+    if (dismissed) return;
+    dismissed = true;
+
+    splash.classList.add('is-leaving');
+    document.body.style.overflow = '';
+
+    // Retire du DOM après la transition pour libérer les ressources
+    splash.addEventListener('transitionend', () => {
+      splash.remove();
+    }, { once: true });
+
+    // Nettoyage des listeners
+    window.removeEventListener('wheel',     onInteract, { passive: true });
+    window.removeEventListener('touchmove', onInteract, { passive: true });
+    window.removeEventListener('keydown',   onInteract);
+  }
+
+  function onInteract() { dismissSplash(); }
+
+  // Écoute le scroll / swipe / touche clavier après 1.2s
+  // (laisse le temps à l'animation d'entrée du logo de se jouer)
+  setTimeout(() => {
+    window.addEventListener('wheel',     onInteract, { passive: true });
+    window.addEventListener('touchmove', onInteract, { passive: true });
+    window.addEventListener('keydown',   onInteract);
+  }, 1200);
+
+  // Dismiss automatique après 3.5s maximum (non bloquant)
+  setTimeout(dismissSplash, 3500);
+})();
+
+// =====================
 // NAVBAR SCROLL
 // =====================
 const navbar = document.querySelector('.navbar');

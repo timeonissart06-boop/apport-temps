@@ -256,7 +256,7 @@ h1, h2, h3, h4 {
 }
 
 .section--blue {
-  /* Légèrement déphasé du hero : même famille de couleurs, durée différente */
+  /* Déphasé du hero : durée plus longue, direction reverse */
   background: linear-gradient(
     135deg,
     #2C3A9A 0%,
@@ -264,9 +264,35 @@ h1, h2, h3, h4 {
     #4a5fd0 70%,
     #2232a0 100%
   );
-  background-size: 260% 260%;
-  animation: bgFlow 28s ease-in-out infinite reverse;
+  background-size: 300% 300%;
+  animation: bgFlow 26s ease-in-out infinite reverse;
   color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Orbe déphasé — positionné à droite, cycle inverse */
+.section--blue::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 250%;
+  top: -75%;
+  right: 0%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(160, 185, 255, 0.16) 0%,
+    transparent 60%
+  );
+  animation: orbFloat 22s ease-in-out infinite reverse;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Le contenu reste au-dessus de l'orbe */
+.section--blue > .container {
+  position: relative;
+  z-index: 1;
 }
 
 .grid-2 {
@@ -600,13 +626,44 @@ h1, h2, h3, h4 {
   animation: bgFlow 22s ease-in-out infinite;
 }
 
-/* Keyframe partagé pour hero + CTA + bannière — durées différentes */
+/* Keyframe pour le déplacement du gradient de fond */
 @keyframes bgFlow {
   0%   { background-position: 0%   0%;   }
   25%  { background-position: 70%  30%;  }
   50%  { background-position: 100% 60%;  }
   75%  { background-position: 30%  100%; }
   100% { background-position: 0%   0%;   }
+}
+
+/*
+  Keyframe pour l'orbe lumineux (style Stripe/Apple) :
+  un blob de lumière translucide qui dérive lentement à la surface.
+  Utilise transform (GPU) — zéro impact sur le rendu principal.
+*/
+@keyframes orbFloat {
+  0%   { transform: translate(0%,    0%);   opacity: 1;   }
+  30%  { transform: translate(55%,  -25%);  opacity: 0.7; }
+  60%  { transform: translate(80%,   30%);  opacity: 1;   }
+  80%  { transform: translate(20%,   55%);  opacity: 0.8; }
+  100% { transform: translate(0%,    0%);   opacity: 1;   }
+}
+
+/* Orbe sur le hero — blob lumineux qui dérive lentement */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 55%;
+  height: 130%;
+  top: -15%;
+  left: -5%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(140, 160, 255, 0.18) 0%,
+    transparent 65%
+  );
+  animation: orbFloat 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Halo rose — plus subtil et décalé */
@@ -760,6 +817,12 @@ h1, h2, h3, h4 {
 .card__icon--pink { background: var(--pink-light); }
 .card__icon--green { background: var(--green-light); }
 
+/* Couleur des icônes SVG selon la teinte du conteneur */
+.card__icon--blue svg { color: var(--blue); }
+.card__icon--pink svg { color: var(--pink); }
+.card__icon--green svg { color: var(--green); }
+.avantage__icon svg  { color: var(--blue); }
+
 .card h3 {
   font-size: 1.05rem;
   font-weight: 600;
@@ -848,7 +911,28 @@ h1, h2, h3, h4 {
   overflow: hidden;
 }
 
-/* Texte décoratif géant supprimé — trop prévisible */
+/* Orbe lumineux sur le banner — cycle court pour plus de dynamisme */
+.credit-banner::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 300%;
+  top: -100%;
+  right: 5%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(160, 190, 255, 0.14) 0%,
+    transparent 58%
+  );
+  animation: orbFloat 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.credit-banner > * {
+  position: relative;
+  z-index: 1;
+}
 
 .credit-banner h3 {
   color: var(--white);
@@ -1103,19 +1187,43 @@ h1, h2, h3, h4 {
    PAGE HERO (inner pages)
    ===================== */
 .page-hero {
-  background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+  /* Même famille de bleus — légèrement différent du hero principal */
+  background: linear-gradient(
+    140deg,
+    #1e2a7a 0%,
+    #3B4FBE 48%,
+    #2C3A9A 80%,
+    #1a2468 100%
+  );
+  background-size: 280% 280%;
+  animation: bgFlow 18s ease-in-out infinite;
   padding: 60px 0 52px;
   color: var(--white);
   position: relative;
   overflow: hidden;
 }
 
-.page-hero::after {
+/* Orbe subtil sur les pages intérieures */
+.page-hero::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 28px 28px;
+  width: 45%;
+  height: 200%;
+  top: -50%;
+  right: 10%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(140, 165, 255, 0.16) 0%,
+    transparent 65%
+  );
+  animation: orbFloat 17s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Suppression de la grille de points — cohérence avec le hero principal */
+.page-hero::after {
+  display: none;
 }
 
 .page-hero .container {

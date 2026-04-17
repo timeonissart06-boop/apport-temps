@@ -245,8 +245,27 @@ h1, h2, h3, h4 {
   background: var(--gray-50);
 }
 
+/* Sur fond gris, les cards blanches n'ont pas besoin d'ombre :
+   le contraste de surface suffit à les faire "flotter" */
+.section--gray .card {
+  box-shadow: none;
+}
+
+.section--gray .card:hover {
+  box-shadow: 0 8px 28px rgba(30,34,64,0.08);
+}
+
 .section--blue {
-  background: var(--blue);
+  /* Légèrement déphasé du hero : même famille de couleurs, durée différente */
+  background: linear-gradient(
+    135deg,
+    #2C3A9A 0%,
+    #3B4FBE 45%,
+    #4a5fd0 70%,
+    #2232a0 100%
+  );
+  background-size: 260% 260%;
+  animation: bgFlow 28s ease-in-out infinite reverse;
   color: var(--white);
 }
 
@@ -564,8 +583,30 @@ h1, h2, h3, h4 {
 .hero__bg {
   position: absolute;
   inset: 0;
-  /* Gradient plus doux, moins saturé — direction légèrement modifiée */
-  background: linear-gradient(150deg, #242f80 0%, #3B4FBE 50%, #1a2060 100%);
+  /*
+    Gradient vivant mais discret : stops proches dans la même famille bleue.
+    La taille à 280% laisse de la marge de déplacement sans jamais faire surgir
+    une couleur étrangère. Le cycle dure 22s — imperceptible en lecture, mais
+    le fond "respire" légèrement.
+  */
+  background: linear-gradient(
+    150deg,
+    #1a2468 0%,
+    #3B4FBE 38%,
+    #2a3baa 62%,
+    #131a54 100%
+  );
+  background-size: 280% 280%;
+  animation: bgFlow 22s ease-in-out infinite;
+}
+
+/* Keyframe partagé pour hero + CTA + bannière — durées différentes */
+@keyframes bgFlow {
+  0%   { background-position: 0%   0%;   }
+  25%  { background-position: 70%  30%;  }
+  50%  { background-position: 100% 60%;  }
+  75%  { background-position: 30%  100%; }
+  100% { background-position: 0%   0%;   }
 }
 
 /* Halo rose — plus subtil et décalé */
@@ -684,16 +725,23 @@ h1, h2, h3, h4 {
 .card {
   background: var(--white);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--gray-200);
-  padding: 28px;
-  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  /* Bordure invisible — le layout reste stable mais rien ne "boxe" visuellement */
+  border: 1px solid transparent;
+  padding: 32px;
+  /* Ombre très légère à deux couches : profondeur naturelle sans lourdeur */
+  box-shadow:
+    0 1px 2px rgba(30,34,64,0.04),
+    0 4px 18px rgba(30,34,64,0.06);
+  transition: box-shadow 0.35s ease, transform 0.3s ease;
   will-change: transform;
 }
 
 .card:hover {
-  box-shadow: 0 16px 48px rgba(30,34,64,0.11);
+  /* L'ombre grossit doucement — pas de saut ni de bordure qui "pop" */
+  box-shadow:
+    0 2px 4px rgba(30,34,64,0.05),
+    0 12px 36px rgba(30,34,64,0.10);
   transform: translateY(-2px);
-  border-color: rgba(59,79,190,0.18);
 }
 
 .card__icon {
@@ -779,7 +827,16 @@ h1, h2, h3, h4 {
    CREDIT BANNER
    ===================== */
 .credit-banner {
-  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+  /* Cycle plus court (16s) et direction oblique — phase différente des deux autres zones */
+  background: linear-gradient(
+    120deg,
+    #3B4FBE 0%,
+    #2C3A9A 40%,
+    #4252c8 70%,
+    #1e2a8a 100%
+  );
+  background-size: 240% 240%;
+  animation: bgFlow 16s ease-in-out infinite;
   border-radius: var(--radius-xl);
   padding: 40px 48px;
   display: flex;
@@ -1148,4 +1205,34 @@ h1, h2, h3, h4 {
   .hero__actions { flex-direction: column; }
   .hero__actions .btn { width: 100%; justify-content: center; }
   .btn-lg { padding: 14px 24px; }
+}
+
+/* =====================
+   ACCESSIBILITÉ — RESPECT DU PARAMÈTRE SYSTÈME
+   Stoppe toutes les animations pour les utilisateurs sensibles
+   (épilepsie, préférence de confort). Critère de qualité premium.
+   ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .hero__bg,
+  .section--blue,
+  .credit-banner,
+  #splash,
+  .splash__inner,
+  .splash__hint,
+  .splash__hint-line,
+  .fade-up,
+  .navbar__phone::before,
+  .hero__badge-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .fade-up {
+    opacity: 1;
+    transform: none;
+  }
+
+  #splash {
+    display: none;
+  }
 }
